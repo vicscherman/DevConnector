@@ -127,17 +127,98 @@ router.delete('/', auth, async (req, res) => {
   try {
     //@todo = remove users posts
     //remove profile
-    await Profile.findOneAndRemove({user: req.user.id})
+    await Profile.findOneAndRemove({ user: req.user.id });
     //remove user
-    await User.findOneAndRemove({_id :req.user.id})
+    await User.findOneAndRemove({ _id: req.user.id });
 
-
-
-
-
-    res.json({msg: 'User successfully deleted'});
+    res.json({ msg: 'User successfully deleted' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 });
+
+///@route  PUT api/profile/experience
+//@desc    Add profile experience
+//@access  Private
+
+router.put(
+  '/experience',
+  [
+    auth,
+    [
+      check('title', 'Title is required').not().isEmpty(),
+      check('company', 'Company is required').not().isEmpty(),
+      check('from', 'From date is required').not().isEmpty(),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { title, company, location, from, to, current, description } =
+      req.body;
+    //spread out request object to get access to all properties
+    const newExp = { ...req.body };
+
+    try {
+      const profile = await Profile.findOne({ user: req.user.id });
+
+      profile.experience.unshift(newExp);
+      await profile.save();
+      res.json(profile);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+
+
+// @route   PUT api/profile/experience/:exp_id
+// @desc    Edit profile experience
+// @access  Private
+router.put(
+  '/experience/:exp_id',
+  [
+    auth,
+    check('title', 'Title is required').not().isEmpty(),
+    check('company', 'Company is required').not().isEmpty(),
+    check('from', 'From date is required').not().isEmpty()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+ 
+    const { title, company, location, from, to, current, description } = req.body;
+    // since title, company, from are required
+    const exp = { title, company, from };
+    if (location) exp.location = location;
+    if (to) exp.to = to;
+    if (current) exp.current = current;
+    if (description) exp.description = description;
+ 
+    try {
+      const profile = await Profile.findOneAndUpdate(
+    
+        { user: req.user.id, 'experience._id': req.params.exp_id },
+        {
+          $set: {
+            // I don't want my experience id to change
+            'experience.$': { _id: req.params.exp_id, ...exp }
+          }
+        },
+        { new: true }
+      );
+      res.json(profile);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
