@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
+const config = require('config')
 const { check, validationResult } = require('express-validator');
 //import user model
 const User = require('../../models/User');
-
 ///@route  POST api/users
 //@desc    Register User
 //@access  Public
@@ -55,7 +56,21 @@ router.post(
       await user.save();
 
       //return json web token
-      res.send('Users Registered');
+      const payload = {
+        user:{
+          //mongoose lets you access it as .id and not ._id
+          id: user.id
+        }
+      }
+      //sign token with secret
+      jwt.sign(payload, config.get('jwtSecret') ,{
+        //long expiration for development
+        expiresIn: 3600000
+      }, (err,token)=> {
+        if(err){throw err}
+        //return our token to client
+        res.json({token})
+      })
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
