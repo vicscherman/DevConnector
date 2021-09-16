@@ -47,23 +47,17 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const {
-      skills,
-      youtube,
-      facebook,
-      twitter,
-      instagram,
-      linkedin,
-    } = req.body;
+    const { skills, youtube, facebook, twitter, instagram, linkedin } =
+      req.body;
 
-//build profile object with nested social object
+    //build profile object with nested social object
 
     const profileFields = {
       ...req.body,
       user: req.user.id,
-      skills: skills.split(',').map(skill => skill.trim()),
-      social: {youtube, twitter, facebook, linkedin, instagram}
-    }
+      skills: skills.split(',').map((skill) => skill.trim()),
+      social: { youtube, twitter, facebook, linkedin, instagram },
+    };
     try {
       let profile = await Profile.findOne({ user: req.user.id });
       if (profile) {
@@ -87,4 +81,63 @@ router.post(
   }
 );
 
+///@route  GET api/profile/
+//@desc    get all profiles
+//@access  Public
+
+router.get('/', async (req, res) => {
+  try {
+    const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+    res.json(profiles);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+///@route  GET api/profile/user/:uid
+//@desc    GET profile by user ID
+//@access  Public
+
 module.exports = router;
+
+router.get('/user/:user_id', async (req, res) => {
+  try {
+    const profile = await Profile.findOne({
+      user: req.params.user_id,
+    }).populate('user', ['name', 'avatar']);
+    if (!profile) {
+      return res.status(400).json({ msg: 'Profile not found' });
+    }
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(400).json({ msg: 'Profile not found' });
+    }
+    res.status(500).send('Server error');
+  }
+});
+
+///@route  DELETE api/profile/
+//@desc    DELETE profile,user, posts
+//@access  Private
+
+router.delete('/', auth, async (req, res) => {
+  try {
+    //@todo = remove users posts
+    //remove profile
+    await Profile.findOneAndRemove({user: req.user.id})
+    //remove user
+    await User.findOneAndRemove({_id :req.user.id})
+
+
+
+
+
+    res.json({msg: 'User successfully deleted'});
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
