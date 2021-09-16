@@ -68,7 +68,7 @@ router.post(
         expiresIn: 3600000
       }, (err,token)=> {
         if(err){throw err}
-        //return our token to client
+        //return our token to client with user id payload
         res.json({token})
       })
     } catch (err) {
