@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
+const request = require('request');
+const config = require('config');
 
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
@@ -233,7 +235,7 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
     const removeIndex = profile.experience
       .map((item) => item.id)
       .indexOf(req.params.exp_id);
-    //splice out that index  
+    //splice out that index
     profile.experience.splice(removeIndex, 1);
     //save and send response
     await profile.save();
@@ -243,7 +245,6 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-
 
 ///@route  PUT api/profile/education
 //@desc    Add profile education
@@ -296,7 +297,7 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
     const removeIndex = profile.education
       .map((item) => item.id)
       .indexOf(req.params.edu_id);
-    //splice out that index  
+    //splice out that index
     profile.education.splice(removeIndex, 1);
     //save and send response
     await profile.save();
@@ -317,7 +318,7 @@ router.put(
     check('school', 'School is required').not().isEmpty(),
     check('degree', 'Degree is required').not().isEmpty(),
     check('from', 'From date is required').not().isEmpty(),
-    check('fieldofstudy', 'Field of Study is required').not().isEmpty()
+    check('fieldofstudy', 'Field of Study is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -325,10 +326,10 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { school, degree, fieldofstudy, from, to, current, description} =
+    const { school, degree, fieldofstudy, from, to, current, description } =
       req.body;
     // since title, company, from are required
-    const edu = { school, degree,fieldofstudy,from };
+    const edu = { school, degree, fieldofstudy, from };
     if (school) edu.school = school;
     if (degree) edu.degree = degree;
     if (fieldofstudy) edu.fieldofstudy = fieldofstudy;
@@ -356,9 +357,32 @@ router.put(
   }
 );
 
+// @route   Get api/profile/github/:username
+// @desc    Get user repos from github
+// @access  Public
 
-
-
-
+router.get('/github/:username', (req, res) => {
+  try {
+    const options = {
+      uri: `https://api.github.com/users/${
+        req.params.username
+      }/repos?per_page=5&sort=created:asc&client_id=${config.get(
+        'githubClientId'
+      )}&client_secret=${config.get('githubSecret')}`,
+      method: 'GET',
+      headers: { 'user-agent': 'node.js' },
+    };
+    request(options, (error, response, body) => {
+      if (error) console.error(error);
+      if (response.statusCode != 200) {
+        return res.status(404).json({ msg: 'No Github profile found' });
+      }
+      res.json(JSON.parse(body));
+    });
+  } catch (err) {
+    console.error(err.messge);
+    res.status(500).send('Server Error');
+  }
+});
 
 module.exports = router;
