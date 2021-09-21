@@ -1,14 +1,14 @@
 import React, { Fragment, useState } from 'react';
 //connect to work with redux
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link , Redirect} from 'react-router-dom';
 //set alert action
 import { setAlert } from '../../actions/alert';
 //set register action
 import { register } from '../../actions/auth';
 import PropTypes from 'prop-types';
 
-const Register = ({ setAlert , register}) => {
+const Register = ({ setAlert , register, isAuthenticated}) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,7 +21,7 @@ const Register = ({ setAlert , register}) => {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  //ultimately will be redux action. Just to test let's do the following
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (password !== password2) {
@@ -31,6 +31,10 @@ const Register = ({ setAlert , register}) => {
       register({name, email, password})
     }
   };
+
+  if(isAuthenticated){
+   return <Redirect to="/dashboard"/>
+  }
 
   return (
     <Fragment>
@@ -97,6 +101,13 @@ const Register = ({ setAlert , register}) => {
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
   register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
 };
-//set alert being used here, becomes available as a prop
-export default connect(null, { setAlert, register })(Register);
+
+const mapStateToProps = state => ({
+  isAuthenticated : state.auth.isAuthenticated
+})
+
+
+//set alert being used here, becomes available as a prop, register, get auth state through mapstate to props
+export default connect(mapStateToProps, { setAlert, register })(Register);
