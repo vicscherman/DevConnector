@@ -1,4 +1,7 @@
-//Multiple reducers that are combined here
+//Multiple reducers  are combined here
 import { combineReducers } from 'redux';
+import alert from './alert'
 
-export default combineReducers({});
+export default combineReducers({
+  alert
+});
