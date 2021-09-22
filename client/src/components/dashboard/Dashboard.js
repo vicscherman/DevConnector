@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Spinner from '../layout/Spinner';
 import { getCurrentProfile } from '../../actions/profile';
+import DashboardActions from './DashboardActions';
 
 const Dashboard = ({
   getCurrentProfile,
@@ -24,7 +25,7 @@ const Dashboard = ({
         <i className='fas fa-user'></i> Welcome {user && user.name}!
       </p>
       {profile !== null ? (
-        <Fragment>Has profile</Fragment>
+        <Fragment><DashboardActions/></Fragment>
       ) : (
         <Fragment>
           <p>You have not yet created a Developer Profile.</p>
