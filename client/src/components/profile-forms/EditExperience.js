@@ -44,7 +44,8 @@ const EditExperience = ({
       current: loading || !job[0].current ? '' : job[0].current,
       description: loading || !job[0].description ? '' : job[0].description,
     });
-  }, [loading, exp_id, getCurrentProfile, profile.experience]);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, exp_id, getCurrentProfile]);
 
   const handleInputChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
