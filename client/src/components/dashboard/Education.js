@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import { connect } from 'react-redux';
@@ -17,7 +18,9 @@ const Education = ({ education }) => {
         )}
       </td>
       <td>
-        <button className="btn btn-success">Edit</button>
+      <Link to={`/edit-education/${edu._id}`} id={edu._id} className='btn btn-success'>
+       Edit
+        </Link>
       </td>
       <td>
         <button className="btn btn-danger">Delete</button>
