@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Link, withRouter, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { editExperience, getCurrentProfile } from '../../actions/profile';
@@ -44,7 +44,7 @@ const EditExperience = ({
       current: loading || !job[0].current ? '' : job[0].current,
       description: loading || !job[0].description ? '' : job[0].description,
     });
-  }, [loading]);
+  }, [loading, exp_id, getCurrentProfile, profile.experience]);
 
   const handleInputChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });

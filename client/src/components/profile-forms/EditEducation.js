@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Link, withRouter, useParams } from 'react-router-dom';
+import { Link,  useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { editEducation, getCurrentProfile } from '../../actions/profile';
@@ -44,7 +44,7 @@ const EditEducation = ({
       current: loading || !education[0].current ? '' : education[0].current,
       description: loading || !education[0].description ? '' : education[0].description,
     });
-  }, [loading]);
+  }, [loading, edu_id, getCurrentProfile,profile.education]);
 
   const handleInputChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });

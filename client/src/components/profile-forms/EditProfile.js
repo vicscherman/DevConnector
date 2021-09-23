@@ -1,11 +1,16 @@
-import React, { Fragment, useState , useEffect} from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 //withRouter allows us to use history object for redirects
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { createProfile , getCurrentProfile} from '../../actions/profile';
+import { createProfile, getCurrentProfile } from '../../actions/profile';
 
-const EditProfile = ({profile:{profile,loading}, createProfile, getCurrentProfile, history, }) => {
+const EditProfile = ({
+  profile: { profile, loading },
+  createProfile,
+  getCurrentProfile,
+  history,
+}) => {
   const [formData, setFormData] = useState({
     company: '',
     website: '',
@@ -23,24 +28,36 @@ const EditProfile = ({profile:{profile,loading}, createProfile, getCurrentProfil
 
   const [displaySocialLinks, toggleDisplaySocialLinks] = useState(false);
 
-  useEffect(()=> {
-    getCurrentProfile()
- //set form data to loading, a blank field, or whatever is stored in db
+  useEffect(() => {
+    getCurrentProfile();
+    //set form data to loading, a blank field, or whatever is stored in db
     setFormData({
-      company: loading || !profile.company? '' : profile.company,
-      website: loading || !profile.website? '' : profile.website,
-      location: loading || !profile.location? '' : profile.location,
-      status: loading || !profile.status? '' : profile.status,
-      skills: loading || !profile.skills? '' : profile.skills.join(','),
-      githubusername: loading || !profile.githubusername? '' : profile.githubusername,
-      bio: loading || !profile.bio? '' : profile.bio,
-      twitter: loading || !profile.social? '' : profile.social.twitter,
-      facebook: loading || !profile.social? '' : profile.social.facebook,
-      linkedin: loading || !profile.social? '' : profile.social.linkedin,
-      youtube: loading || !profile.social? '' : profile.social.youtube,
-      instagram: loading || !profile.social? '' : profile.social.instagram,
-    })
-  },[loading])
+      company: loading || !profile.company ? '' : profile.company,
+      website: loading || !profile.website ? '' : profile.website,
+      location: loading || !profile.location ? '' : profile.location,
+      status: loading || !profile.status ? '' : profile.status,
+      skills: loading || !profile.skills ? '' : profile.skills.join(','),
+      githubusername:
+        loading || !profile.githubusername ? '' : profile.githubusername,
+      bio: loading || !profile.bio ? '' : profile.bio,
+      twitter: loading || !profile.social ? '' : profile.social.twitter,
+      facebook: loading || !profile.social ? '' : profile.social.facebook,
+      linkedin: loading || !profile.social ? '' : profile.social.linkedin,
+      youtube: loading || !profile.social ? '' : profile.social.youtube,
+      instagram: loading || !profile.social ? '' : profile.social.instagram,
+    });
+  }, [
+    loading,
+    getCurrentProfile,
+    profile.company,
+    profile.website,
+    profile.location,
+    profile.status,
+    profile.skills,
+    profile.bio,
+    profile.social,
+    profile.githubusername
+  ]);
 
   const {
     company,
@@ -58,7 +75,7 @@ const EditProfile = ({profile:{profile,loading}, createProfile, getCurrentProfil
   } = formData;
 
   const handleInputChange = (e) =>
-  ///needed to take deconstructed formdata for it to work. To add to existing form data
+    ///needed to take deconstructed formdata for it to work. To add to existing form data
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleFormSubmit = (e) => {
@@ -71,10 +88,11 @@ const EditProfile = ({profile:{profile,loading}, createProfile, getCurrentProfil
     <Fragment>
       <h1 className='large text-primary'>Edit Your Profile</h1>
       <p className='lead'>
-        <i className='fas fa-user'></i> It's great to keep your profile up to date!
+        <i className='fas fa-user'></i> It's great to keep your profile up to
+        date!
       </p>
       <small>* = required field</small>
-      <form className='form' onSubmit={e => handleFormSubmit(e)}>
+      <form className='form' onSubmit={(e) => handleFormSubmit(e)}>
         <div className='form-group'>
           <select
             name='status'
@@ -237,7 +255,7 @@ const EditProfile = ({profile:{profile,loading}, createProfile, getCurrentProfil
         )}
 
         <input type='submit' className='btn btn-primary my-1' />
-        <Link to='/dashboard'className='btn btn-light my-1' >
+        <Link to='/dashboard' className='btn btn-light my-1'>
           Go Back
         </Link>
       </form>
@@ -251,9 +269,11 @@ EditProfile.propTypes = {
   getCurrentProfile: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
-  profile: state.profile
-})
+const mapStateToProps = (state) => ({
+  profile: state.profile,
+});
 
-                                          //again with router acts on the create profile to allow acess to history as a prop
-export default connect(mapStateToProps, { createProfile, getCurrentProfile })(withRouter(EditProfile))
+//again with router acts on the create profile to allow acess to history as a prop
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
+  withRouter(EditProfile)
+);
