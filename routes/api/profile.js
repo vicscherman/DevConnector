@@ -5,9 +5,9 @@ const { check, validationResult } = require('express-validator');
 const request = require('request');
 const config = require('config');
 
-
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Post = require('../../models/Post');
 
 ///@route  GET api/profile/me
 //@desc    Get current user's profile
@@ -96,24 +96,21 @@ router.post(
           { new: true }
         );
 
-        return res.json(profile)
+        return res.json(profile);
       }
 
       //create if not exists
 
-      profile = new Profile(profileFields)
+      profile = new Profile(profileFields);
 
-      await profile.save()
-      res.json(profile)
-
+      await profile.save();
+      res.json(profile);
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
     }
   }
 );
-
-
 
 ///@route  GET api/profile/
 //@desc    get all profiles
@@ -159,7 +156,8 @@ router.get('/user/:user_id', async (req, res) => {
 
 router.delete('/', auth, async (req, res) => {
   try {
-    //@todo = remove users posts
+    // remove users posts
+    await Post.deleteMany({ user: req.user.id });
     //remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
     //remove user
