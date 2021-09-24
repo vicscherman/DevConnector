@@ -4,11 +4,19 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { login } from '../../actions/auth';
 
+
 const Login = ({ login, isAuthenticated }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  const handleDemoAccount = () => {
+    setFormData({
+      email: process.env.REACT_APP_DEMO_EMAIL,
+      password: process.env.REACT_APP_DEMO_PASSWORD
+    });
+  };
 
   const { email, password } = formData;
 
@@ -57,6 +65,7 @@ const Login = ({ login, isAuthenticated }) => {
         </div>
 
         <input type='submit' className='btn btn-primary' value='Login' />
+        <button type='submit' onClick={handleDemoAccount} className='btn btn-danger'>Use Demo Account</button>
       </form>
       <p className='my-1'>
         Don't have an account? <Link to='/register'>Sign Up</Link>
