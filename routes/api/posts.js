@@ -107,6 +107,42 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+//To DO: Integrate with front end
+//@route Put api/posts/edit/:postId
+//Edit a post by postId
+//@ access Private need to be logged in
+router.put(
+  '/edit/:postId',
+  [auth, check('text', 'Post text is required').not().isEmpty()],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
+    const { text } = req.body;
+
+    const editedPost = { text };
+    if (text) editedPost.text = text;
+    try {
+      const post = await Post.findByIdAndUpdate(req.params.postId,{
+        text: text
+      }
+
+      );
+
+      if (post.user.toString() !== req.user.id) {
+        return res.status(401).json({ msg: 'User not authorized' });
+      }
+      await post.save()
+      res.json(post);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
 ///@route  Put api/posts/like/:id
 //@desc   Like a post by ID
 //@access  Private(need to be logged in)
@@ -204,42 +240,94 @@ router.post(
   }
 );
 
+//To Do: Integrate with front end
+//Done
+//@route PUT api/posts/comment/:id/:comment_id
+//@desc Edit comment
+//edit comment
+
+router.put(
+  '/comment/:postId/:comment_id',
+  [auth, check('text', 'Post text is required').not().isEmpty()],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
+    const { text } = req.body;
+
+    const editedPost = { text };
+    if (text) editedPost.text = text;
+    try {
+      const post = await Post.findById(req.params.postId)
+      //grab comment
+      const comment = await post.comments.find(
+        (comment) => comment.id === req.params.comment_id
+      )
+        //check if comment exists
+      if (!comment) {
+        return res.status(404).json({ msg: 'Comment not found' });
+      }
+
+      if (comment.user.toString() !== req.user.id) {
+        return res.status(401).json({ msg: 'User not authorized' });
+      }
+
+      comment.text = text
+      await post.save()
+      res.json(post);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+
+
+
+
+
+
+
 ///@route  Delete api/posts/comment/:id/:comment_id
 //@desc    Delete comment
 //@access  Private
 
-router.delete('/comment/:id/:comment_id', auth, async(req, res)=> {
-  try{
+router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
+  try {
     const post = await Post.findById(req.params.id);
     //pull out comment
-    const comment = await post.comments.find(comment => comment.id === req.params.comment_id)
+    const comment = await post.comments.find(
+      (comment) => comment.id === req.params.comment_id
+    );
 
     //Make sure comment exists
-    if(!comment ){
-      return res.status(404).json({msg: "Comment not found"})
+    if (!comment) {
+      return res.status(404).json({ msg: 'Comment not found' });
     }
 
     //Make sure user deleting owns the comment
-    if(comment.user.toString() !== req.user.id){
-      return (res.status(401)).json({msg:"User not authorized"})
+    if (comment.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorized' });
     }
 
-     //get remove index
-     const removeIndex = post.comments
-     .map((comment) => comment.user.toString())
-     .indexOf(req.user.id);
-   //splice out like
-   post.comments.splice(removeIndex, 1);
+    //get remove index
+    const removeIndex = post.comments
+      .map((comment) => comment.user.toString())
+      .indexOf(req.user.id);
+    //splice out like
+    post.comments.splice(removeIndex, 1);
 
-   //save post
-   await post.save();
-   //return all likes
-   res.json(post.comments);
-
-  }catch(err){
-    console.error(err.message)
-    res.status(500).send('Server Error')
+    //save post
+    await post.save();
+    //return all likes
+    res.json(post.comments);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
-})
+});
 
 module.exports = router;
