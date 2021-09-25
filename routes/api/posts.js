@@ -107,6 +107,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+//REFER TO THIS ROUTE HERE WHEN YOU WORK ON TYING TO FRONT END
 //To DO: Integrate with front end
 //@route Put api/posts/edit/:postId
 //Edit a post by postId
@@ -240,6 +241,7 @@ router.post(
   }
 );
 
+//REFER TO THIS ROUTE WHEN WORKING ON FRONT END
 //To Do: Integrate with front end
 //Done
 //@route PUT api/posts/comment/:id/:comment_id
@@ -247,7 +249,7 @@ router.post(
 //edit comment
 
 router.put(
-  '/comment/:postId/:comment_id',
+  '/comment/:postId/:commentId',
   [auth, check('text', 'Post text is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
@@ -263,7 +265,7 @@ router.put(
       const post = await Post.findById(req.params.postId)
       //grab comment
       const comment = await post.comments.find(
-        (comment) => comment.id === req.params.comment_id
+        (comment) => comment.id === req.params.commentId
       )
         //check if comment exists
       if (!comment) {

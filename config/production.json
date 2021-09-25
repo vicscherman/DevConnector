@@ -1,5 +1,0 @@
-{
-  "mongoURI": "mongodb+srv://victor:FW5pZMlPzXw6DAzz@cluster0.xvq1f.mongodb.net/DevConnector?retryWrites=true&w=majority",
-  "jwtSecret": "viggoismyinsectlover",
-  "githubToken":"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"
-}

@@ -1,4 +1,4 @@
 node_modules/
-mongo.txt
 config/default.json
-config/production.json
+prod.json
+config/prod.json
