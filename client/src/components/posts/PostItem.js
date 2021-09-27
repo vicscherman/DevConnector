@@ -50,6 +50,9 @@ const PostItem = ({
                 <span className='comment-count'>{comments.length}</span>
               )}
             </Link>
+          { !auth.loading && user === auth.user._id && (<Link to={`/posts/edit/${_id}`} className='btn btn-success'>
+             Edit
+           </Link>)}
             {!auth.loading && user === auth.user._id && (
               <button
                 onClick={() => deletePost(_id)}

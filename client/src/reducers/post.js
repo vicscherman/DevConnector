@@ -5,6 +5,7 @@ import {
   UPDATE_LIKES,
   DELETE_POST,
   ADD_POST,
+  EDIT_POST,
   ADD_COMMENT,
   REMOVE_COMMENT
 } from '../actions/types';
@@ -38,6 +39,13 @@ export default function post(state = initialState, action) {
         posts: [  payload,...state.posts],
         loading: false,
       };
+    case EDIT_POST:{
+      return {
+        ...state,
+        posts: [payload],
+        loading: false
+      }
+    }  
     case DELETE_POST:
       return {
         ...state,

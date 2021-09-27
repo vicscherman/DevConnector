@@ -107,8 +107,6 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-//REFER TO THIS ROUTE HERE WHEN YOU WORK ON TYING TO FRONT END
-//To DO: Integrate with front end
 //@route Put api/posts/edit/:postId
 //Edit a post by postId
 //@ access Private need to be logged in
@@ -120,22 +118,20 @@ router.put(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    
+
     const { text } = req.body;
 
     const editedPost = { text };
     if (text) editedPost.text = text;
     try {
-      const post = await Post.findByIdAndUpdate(req.params.postId,{
-        text: text
-      }
-
-      );
+      const post = await Post.findByIdAndUpdate(req.params.postId, {
+        text: text,
+      });
 
       if (post.user.toString() !== req.user.id) {
         return res.status(401).json({ msg: 'User not authorized' });
       }
-      await post.save()
+      await post.save();
       res.json(post);
     } catch (err) {
       console.log(err.message);
@@ -241,33 +237,32 @@ router.post(
   }
 );
 
-//REFER TO THIS ROUTE WHEN WORKING ON FRONT END
 //To Do: Integrate with front end
 //Done
-//@route PUT api/posts/comment/:id/:comment_id
+//@route PUT api/posts/comment/edit/:postid/:commentid
 //@desc Edit comment
 //edit comment
 
 router.put(
-  '/comment/:postId/:commentId',
+  '/comment/edit/:postId/:commentId',
   [auth, check('text', 'Post text is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    
+
     const { text } = req.body;
 
     const editedPost = { text };
     if (text) editedPost.text = text;
     try {
-      const post = await Post.findById(req.params.postId)
+      const post = await Post.findById(req.params.postId);
       //grab comment
       const comment = await post.comments.find(
         (comment) => comment.id === req.params.commentId
-      )
-        //check if comment exists
+      );
+      //check if comment exists
       if (!comment) {
         return res.status(404).json({ msg: 'Comment not found' });
       }
@@ -276,8 +271,8 @@ router.put(
         return res.status(401).json({ msg: 'User not authorized' });
       }
 
-      comment.text = text
-      await post.save()
+      comment.text = text;
+      await post.save();
       res.json(post);
     } catch (err) {
       console.log(err.message);
@@ -285,13 +280,6 @@ router.put(
     }
   }
 );
-
-
-
-
-
-
-
 
 ///@route  Delete api/posts/comment/:id/:comment_id
 //@desc    Delete comment
