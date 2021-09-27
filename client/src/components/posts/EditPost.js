@@ -1,20 +1,25 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { useParams, Link } from 'react-router-dom';
+import {Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Spinner from '../layout/Spinner';
-import { getPost, editPost } from '../../actions/post';
+import {  editPost } from '../../actions/post';
 
-const EditPost = ({ post: { post, loading }, editPost, getPost }) => {
+const EditPost = ({ post:{loading, post}, editPost  })  => {
   const [text, setText] = useState('');
 
-  const { postId } = useParams();
 
-  useEffect(()=> {
-    getPost(postId)
+
+
+//needed to check for post to be non null
+
+useEffect(()=> {
+  if(post){
 setText(post.text)
-    // setText(post.text)
-  },[getPost, postId, post.text])
+  }
+
+},[ post])
+
 
 
 
@@ -22,7 +27,7 @@ setText(post.text)
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    editPost({ text }, postId);
+    editPost({ text },post._id );
 
     setText('');
   };
@@ -57,7 +62,6 @@ setText(post.text)
 
 EditPost.propTypes = {
   editPost: PropTypes.func.isRequired,
-  getPost: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
 };
 
@@ -65,4 +69,4 @@ const mapStateToProps = (state) => ({
   post: state.post,
 });
 
-export default connect(mapStateToProps, { getPost, editPost })(EditPost);
+export default connect(mapStateToProps, {  editPost })(EditPost);
