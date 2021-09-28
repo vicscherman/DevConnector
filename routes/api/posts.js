@@ -131,8 +131,10 @@ router.put(
       if (post.user.toString() !== req.user.id) {
         return res.status(401).json({ msg: 'User not authorized' });
       }
-      await post.save();
-      res.json(post);
+      if (post.user.toString() === req.user.id) {
+        await post.save();
+        res.json(post);
+      }
     } catch (err) {
       console.log(err.message);
       res.status(500).send('Server Error');
@@ -260,7 +262,7 @@ router.put(
       const post = await Post.findById(req.params.postId);
       //grab comment
       const comment = await post.comments.find(
-        (comment) => comment.id === req.params.commentId
+        (comment) => comment.id.toString() === req.params.commentId
       );
       //check if comment exists
       if (!comment) {
@@ -270,10 +272,13 @@ router.put(
       if (comment.user.toString() !== req.user.id) {
         return res.status(401).json({ msg: 'User not authorized' });
       }
-
-      comment.text = text;
-      await post.save();
-      res.json(post);
+  
+        comment.text = text;
+    
+        await post.save();
+        res.json(post);
+       
+    
     } catch (err) {
       console.log(err.message);
       res.status(500).send('Server Error');

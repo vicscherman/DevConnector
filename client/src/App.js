@@ -18,6 +18,7 @@ import Profiles from './components/profiles/Profiles';
 import Posts from './components/posts/Posts';
 import Post from './components/post/Post'
 import EditPost from './components/posts/EditPost';
+import EditComment from './components/post/EditComment';
 import PrivateRoute from './components/routing/PrivateRoute';
 
 //Redux
@@ -62,6 +63,7 @@ const App = () => {
               <PrivateRoute exact path='/posts' component={Posts}/>
               <PrivateRoute exact path='/posts/:postId' component={Post}/>
               <PrivateRoute exact path='/posts/edit/:postId' component={EditPost}/>
+              <PrivateRoute exact path='/posts/edit/:postId/:commentId' component={EditComment}/>
             </Switch>
           </section>
         </Fragment>

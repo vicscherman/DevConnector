@@ -25,6 +25,11 @@ const CommentItem = ({
           Posted on <Moment format='YYYY/MM/DD'>{date}</Moment>
         </p>
         {!auth.loading && user === auth.user._id && (
+          <Link to={`/posts/edit/${postId}/${_id}`} className="btn btn-success" >
+            Edit 
+          </Link>
+        )}
+        {!auth.loading && user === auth.user._id && (
           <button
             onClick={()=> deleteComment(postId, _id)}
             type='button'

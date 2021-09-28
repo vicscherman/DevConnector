@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { setAlert } from './alert';
-import { GET_POSTS,GET_POST, POST_ERROR, UPDATE_LIKES , DELETE_POST, ADD_POST, ADD_COMMENT, REMOVE_COMMENT, EDIT_POST} from './types';
+import { GET_POSTS,GET_POST, POST_ERROR, UPDATE_LIKES , DELETE_POST, ADD_POST, ADD_COMMENT, REMOVE_COMMENT, EDIT_POST, EDIT_COMMENT} from './types';
 
 const config = {
   headers: {
@@ -175,3 +175,23 @@ export const deleteComment = (postId, commentId) => async (dispatch) => {
     });
   }
 };
+
+export const editComment = (postId, commentId, formData) => async dispatch => {
+
+try{
+  const res = await axios.put(`/api/posts/comment/edit/${postId}/${commentId}`,formData, config)
+  dispatch({
+    type: EDIT_COMMENT,
+    payload: res.data
+  })
+  dispatch(setAlert('Comment Edited','success'));
+    
+  }catch(err){
+    dispatch({
+      type: POST_ERROR,
+      payload: {msg: err.response.statusText, status: err.response.status}
+    })
+    dispatch(setAlert('There was a problem editing your Comment', 'danger'));
+  }
+
+}
